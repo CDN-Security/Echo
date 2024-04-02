@@ -40,6 +40,8 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - config.example.yaml
 
 changelog:
   sort: asc

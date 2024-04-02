@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"log/slog"
 	"os"
+	"path/filepath"
 
+	"github.com/BurntSushi/toml"
+	"github.com/CDN-Security/Echo/pkg/option"
 	"gopkg.in/yaml.v3"
 )
 
@@ -30,24 +33,6 @@ type Config struct {
 
 var DefaultConfig = NewConfig()
 
-func init() {
-	configFilePath := "config.yaml"
-	content, err := os.ReadFile(configFilePath)
-	if err != nil {
-		panic(err)
-	}
-	err = yaml.Unmarshal(content, DefaultConfig)
-	if err != nil {
-		panic(err)
-	}
-	data, err := json.Marshal(DefaultConfig)
-	if err != nil {
-		panic(err)
-	}
-	slog.Info("config loaded", slog.String("file", configFilePath))
-	slog.Info(string(data))
-}
-
 func NewConfig() *Config {
 	return &Config{
 		ChallengeConfig: ChallengeConfig{
@@ -68,5 +53,66 @@ func NewConfig() *Config {
 				PrivateKeyPath:  "assets/certificates/www.example.com/privkey.pem",
 			},
 		},
+	}
+}
+
+func init() {
+	// Load the config file
+	configFilePath, err := filepath.Abs(option.Opt.ConfigFilePath)
+	if err != nil {
+		panic(err)
+	}
+	extension := filepath.Ext(configFilePath)
+	switch extension {
+	case ".toml":
+		loadToml(configFilePath)
+		slog.Info("config file loaded", "path", configFilePath)
+	case ".json":
+		loadJson(configFilePath)
+		slog.Info("config file loaded", "path", configFilePath)
+	case ".yaml":
+		loadYaml(configFilePath)
+		slog.Info("config file loaded", "path", configFilePath)
+	default:
+		slog.Error("unsupported config file extension", "extension", extension)
+		os.Exit(1)
+	}
+	// Output the loaded config
+	data, err := json.Marshal(DefaultConfig)
+	if err != nil {
+		panic(err)
+	}
+	slog.Info("config loaded", slog.String("file", configFilePath))
+	slog.Info(string(data))
+}
+
+func loadToml(path string) {
+	if _, err := toml.DecodeFile(path, &DefaultConfig); err != nil {
+		slog.Error("error occured while decoding config file", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+}
+
+func loadJson(path string) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		slog.Error("error occured while reading config file", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+	if err := json.Unmarshal(content, &DefaultConfig); err != nil {
+		slog.Error("error occured while decoding config file", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+}
+
+func loadYaml(path string) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		slog.Error("error occured while reading config file", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+	if err := yaml.Unmarshal(content, &DefaultConfig); err != nil {
+		slog.Error("error occured while decoding config file", slog.String("error", err.Error()))
+		os.Exit(1)
 	}
 }
