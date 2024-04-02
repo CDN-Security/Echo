@@ -70,6 +70,9 @@ func Handler(c *gin.Context) {
 		},
 	}
 
+	c.Header("Echo-Response", headerResponse)
+	c.SetCookie("echo_response", cookieResponse, 0, "/", "", false, false)
+
 	if c.Request.TLS != nil {
 		responseBody.TLS = http_grab_model.NewTLS(c.Request.TLS)
 	}
