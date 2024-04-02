@@ -26,14 +26,15 @@ type EchoServerResponseBody struct {
 	// Request Related Fields
 	HTTP http_grab_model.HTTP `json:"http"`
 	// Challenge and Response
-	Verifications map[string]Verification `json:"verifications"`
+	Verifications map[string]Verification `json:"verifications,omitempty"`
 }
 
 func Handler(c *gin.Context) {
 	responseBody := EchoServerResponseBody{
-		RemoteAddr: c.Request.RemoteAddr,
-		ClientIp:   c.ClientIP(),
-		Timestamp:  time.Now().UnixMicro(),
+		RemoteAddr:    c.Request.RemoteAddr,
+		ClientIp:      c.ClientIP(),
+		Timestamp:     time.Now().UnixMicro(),
+		Verifications: make(map[string]Verification),
 	}
 
 	var httpRequest *http_grab_model.HTTPRequest
@@ -42,19 +43,30 @@ func Handler(c *gin.Context) {
 	// GET /?cdn_challenge=${challenge} HTTP/1.1
 	// Host: www.example.com
 	queryChallenge := model.ExtractQueryChallenge(c)
-	queryResponse := model.AcceptChallenge(queryChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+	if queryChallenge != "" {
+		queryResponse := model.AcceptChallenge(queryChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+		responseBody.Verifications["query"] = Verification{Challenge: queryChallenge, Response: queryResponse}
+	}
 
 	// GET / HTTP/1.1
 	// Host: www.example.com
 	// CDN-Challenge: ${challenge}
 	headerChallenge := model.ExtractHeaderChallenge(c)
-	headerResponse := model.AcceptChallenge(headerChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+	if headerChallenge != "" {
+		headerResponse := model.AcceptChallenge(headerChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+		responseBody.Verifications["header"] = Verification{Challenge: headerChallenge, Response: headerResponse}
+		c.Header("Echo-Response", headerResponse)
+	}
 
 	// GET / HTTP/1.1
 	// Host: www.example.com
 	// Cookie: cdn_challenge=${challenge}
 	cookieChallenge := model.ExtractCookieChallenge(c)
-	cookieResponse := model.AcceptChallenge(cookieChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+	if cookieChallenge != "" {
+		cookieResponse := model.AcceptChallenge(cookieChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+		responseBody.Verifications["cookie"] = Verification{Challenge: cookieChallenge, Response: cookieResponse}
+		c.SetCookie("echo_response", cookieResponse, 0, "/", "", false, false)
+	}
 
 	httpRequest, err = http_grab_model.NewHTTPRequest(c.Request)
 	if err != nil {
@@ -66,16 +78,6 @@ func Handler(c *gin.Context) {
 		Request:  httpRequest,
 		Response: nil,
 	}
-
-	// Challenge and Response
-	responseBody.Verifications = map[string]Verification{
-		"query":  {Challenge: queryChallenge, Response: queryResponse},
-		"header": {Challenge: headerChallenge, Response: headerResponse},
-		"cookie": {Challenge: cookieChallenge, Response: cookieResponse},
-	}
-
-	c.Header("Echo-Response", headerResponse)
-	c.SetCookie("echo_response", cookieResponse, 0, "/", "", false, false)
 
 	if c.Request.TLS != nil {
 		responseBody.TLS = http_grab_model.NewTLS(c.Request.TLS)
