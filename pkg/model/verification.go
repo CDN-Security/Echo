@@ -17,15 +17,15 @@ func ExtractPathChallenge(c *gin.Context) string {
 }
 
 func ExtractQueryChallenge(c *gin.Context) string {
-	return c.Request.URL.Query().Get(config.DefaultConfig.ChallengeConfig.QueryName)
+	return c.Request.URL.Query().Get(config.DefaultConfig.VerificationConfig.QueryName)
 }
 
 func ExtractHeaderChallenge(c *gin.Context) string {
-	return c.Request.Header.Get(config.DefaultConfig.ChallengeConfig.HeaderName)
+	return c.Request.Header.Get(config.DefaultConfig.VerificationConfig.HeaderName)
 }
 
 func ExtractCookieChallenge(c *gin.Context) string {
-	cookie, err := c.Request.Cookie(config.DefaultConfig.ChallengeConfig.CookieName)
+	cookie, err := c.Request.Cookie(config.DefaultConfig.VerificationConfig.CookieName)
 	if err != nil {
 		return ""
 	}

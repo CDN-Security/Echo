@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type ChallengeConfig struct {
+type VerificationConfig struct {
 	SecretKey  string `json:"secret_key" yaml:"secret"`
 	QueryName  string `json:"query_name" yaml:"query_name"`
 	CookieName string `json:"cookie_name" yaml:"cookie_name"`
@@ -27,15 +27,15 @@ type ServerConfig struct {
 }
 
 type Config struct {
-	ChallengeConfig ChallengeConfig `json:"challenge_config" yaml:"challenge_config"`
-	ServerConfigs   []ServerConfig  `json:"server_configs" yaml:"server_configs"`
+	VerificationConfig VerificationConfig `json:"verification_config" yaml:"verification_config"`
+	ServerConfigs      []ServerConfig     `json:"server_configs" yaml:"server_configs"`
 }
 
 var DefaultConfig = NewConfig()
 
 func NewConfig() *Config {
 	return &Config{
-		ChallengeConfig: ChallengeConfig{
+		VerificationConfig: VerificationConfig{
 			SecretKey:  "00000000-0000-000000000-000000000000",
 			QueryName:  "echo",
 			CookieName: "echo",

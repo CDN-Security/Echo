@@ -44,7 +44,7 @@ func Handler(c *gin.Context) {
 	// Host: www.example.com
 	queryChallenge := model.ExtractQueryChallenge(c)
 	if queryChallenge != "" {
-		queryResponse := model.AcceptChallenge(queryChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+		queryResponse := model.AcceptChallenge(queryChallenge, config.DefaultConfig.VerificationConfig.SecretKey)
 		responseBody.Verifications["query"] = Verification{Challenge: queryChallenge, Response: queryResponse}
 	}
 
@@ -53,7 +53,7 @@ func Handler(c *gin.Context) {
 	// CDN-Challenge: ${challenge}
 	headerChallenge := model.ExtractHeaderChallenge(c)
 	if headerChallenge != "" {
-		headerResponse := model.AcceptChallenge(headerChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+		headerResponse := model.AcceptChallenge(headerChallenge, config.DefaultConfig.VerificationConfig.SecretKey)
 		responseBody.Verifications["header"] = Verification{Challenge: headerChallenge, Response: headerResponse}
 		c.Header("Echo-Response", headerResponse)
 	}
@@ -63,7 +63,7 @@ func Handler(c *gin.Context) {
 	// Cookie: cdn_challenge=${challenge}
 	cookieChallenge := model.ExtractCookieChallenge(c)
 	if cookieChallenge != "" {
-		cookieResponse := model.AcceptChallenge(cookieChallenge, config.DefaultConfig.ChallengeConfig.SecretKey)
+		cookieResponse := model.AcceptChallenge(cookieChallenge, config.DefaultConfig.VerificationConfig.SecretKey)
 		responseBody.Verifications["cookie"] = Verification{Challenge: cookieChallenge, Response: cookieResponse}
 		c.SetCookie("echo_response", cookieResponse, 0, "/", "", false, false)
 	}

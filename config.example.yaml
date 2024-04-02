@@ -1,8 +1,8 @@
-challenge_config:
+verification_config:
     secret: 00000000-0000-000000000-000000000000
-    query_name: echo
-    cookie_name: echo
-    header_name: Echo
+    query_name: "echo_challenge"
+    cookie_name: "echo_challenge"
+    header_name: "Echo-Challenge"
 server_configs:
     - host: localhost
       port: 80
