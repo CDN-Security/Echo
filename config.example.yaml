@@ -1,0 +1,16 @@
+challenge_config:
+    secret: 00000000-0000-000000000-000000000000
+    query_name: echo
+    cookie_name: echo
+    header_name: Echo
+server_configs:
+    - host: localhost
+      port: 80
+      enable: true
+      certificate_path: ""
+      private_key_path: ""
+    - host: localhost
+      port: 443
+      enable: false
+      certificate_path: assets/certificates/www.example.com/fullchain.pem
+      private_key_path: assets/certificates/www.example.com/privkey.pem
