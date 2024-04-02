@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	github.com/BurntSushi/toml v1.3.2
-	github.com/WangYihang/http-grab v0.0.8-0.20240402055027-8a1bddb5296b
+	github.com/WangYihang/http-grab v0.0.8-0.20240402065618-888fffd8f408
 	github.com/gin-gonic/gin v1.9.1
 	github.com/jessevdk/go-flags v1.5.0
 	gopkg.in/yaml.v3 v3.0.1
