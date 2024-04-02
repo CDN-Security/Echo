@@ -3,7 +3,7 @@ package option
 import (
 	"os"
 
-	"github.com/WangYihang/http-grab/pkg/model"
+	"github.com/CDN-Security/Echo/pkg/version"
 	"github.com/jessevdk/go-flags"
 )
 
@@ -15,7 +15,7 @@ type Option struct {
 var Opt Option
 
 func init() {
-	Opt.Version = model.PrintVersion
+	Opt.Version = version.PrintVersion
 	if _, err := flags.Parse(&Opt); err != nil {
 		os.Exit(1)
 	}

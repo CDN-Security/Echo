@@ -25,6 +25,11 @@ builds:
       - amd64
     env:
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X "github.com/CDN-Security/Echo/pkg/version.Version={{.Version}}"
+      - -X "github.com/CDN-Security/Echo/pkg/version.Commit={{.Commit}}"
+      - -X "github.com/CDN-Security/Echo/pkg/version.Date={{.Date}}"
 
 archives:
   - format: tar.gz
