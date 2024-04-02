@@ -3,6 +3,7 @@ package controller
 import (
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/CDN-Security/Echo/pkg/config"
 	"github.com/CDN-Security/Echo/pkg/model"
@@ -10,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ChallengeResponse struct {
+type Verification struct {
 	Challenge string `json:"challenge"`
 	Response  string `json:"response"`
 }
@@ -19,15 +20,22 @@ type EchoServerResponseBody struct {
 	// Misc
 	RemoteAddr string `json:"remote_addr"`
 	ClientIp   string `json:"client_ip"`
+	Timestamp  int64  `json:"timestamp"`
 	// TLS Related Fields
 	TLS *http_grab_model.TLS `json:"tls,omitempty"`
 	// Request Related Fields
 	HTTP http_grab_model.HTTP `json:"http"`
 	// Challenge and Response
-	ChallengeResponse map[string]ChallengeResponse `json:"challenge_response"`
+	Verifications map[string]Verification `json:"verifications"`
 }
 
 func Handler(c *gin.Context) {
+	responseBody := EchoServerResponseBody{
+		RemoteAddr: c.Request.RemoteAddr,
+		ClientIp:   c.ClientIP(),
+		Timestamp:  time.Now().UnixMicro(),
+	}
+
 	var httpRequest *http_grab_model.HTTPRequest
 	var err error
 
@@ -53,21 +61,17 @@ func Handler(c *gin.Context) {
 		slog.Error("error occured while parsing HTTP request", slog.String("error", err.Error()))
 	}
 
-	responseBody := EchoServerResponseBody{
-		// Misc
-		RemoteAddr: c.Request.RemoteAddr,
-		ClientIp:   c.ClientIP(),
-		// Request Related Fields
-		HTTP: http_grab_model.HTTP{
-			Request:  httpRequest,
-			Response: nil,
-		},
-		// Challenge and Response
-		ChallengeResponse: map[string]ChallengeResponse{
-			"query":  {Challenge: queryChallenge, Response: queryResponse},
-			"header": {Challenge: headerChallenge, Response: headerResponse},
-			"cookie": {Challenge: cookieChallenge, Response: cookieResponse},
-		},
+	// Request Related Fields
+	responseBody.HTTP = http_grab_model.HTTP{
+		Request:  httpRequest,
+		Response: nil,
+	}
+
+	// Challenge and Response
+	responseBody.Verifications = map[string]Verification{
+		"query":  {Challenge: queryChallenge, Response: queryResponse},
+		"header": {Challenge: headerChallenge, Response: headerResponse},
+		"cookie": {Challenge: cookieChallenge, Response: cookieResponse},
 	}
 
 	c.Header("Echo-Response", headerResponse)
