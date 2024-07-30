@@ -33,3 +33,6 @@ config.json
 
 # Visual Studio Code
 .vscode/
+
+# Helm
+*.tgz
