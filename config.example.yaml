@@ -4,12 +4,12 @@ verification_config:
     cookie_name: "echo_challenge"
     header_name: "Echo-Challenge"
 server_configs:
-    - host: localhost
+    - host: 0.0.0.0
       port: 80
       enable: true
       certificate_path: ""
       private_key_path: ""
-    - host: localhost
+    - host: 0.0.0.0
       port: 443
       enable: false
       certificate_path: assets/certificates/www.example.com/fullchain.pem
