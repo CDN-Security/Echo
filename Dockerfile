@@ -1,6 +1,6 @@
 FROM golang:1.22 AS builder
 
-RUN go install github.com/goreleaser/goreleaser@latest
+RUN go install github.com/goreleaser/goreleaser/v2@latest
 WORKDIR /app
 
 # Copy source code
