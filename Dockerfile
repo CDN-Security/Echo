@@ -1,4 +1,4 @@
-FROM golang:1.22 AS builder
+FROM golang:1.25 AS builder
 
 RUN go install github.com/goreleaser/goreleaser/v2@latest
 WORKDIR /app
