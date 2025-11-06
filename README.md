@@ -6,6 +6,10 @@
 go install github.com/CDN-Security/Echo/cmd/http-echo-server@latest
 ```
 
+```bash
+docker run --rm -it -p 80:80 ghcr.io/cdn-security/echo:main
+```
+
 ## Usage
 
 ```bash
