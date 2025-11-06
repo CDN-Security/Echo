@@ -3,6 +3,7 @@ package controller
 import (
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/CDN-Security/Echo/pkg/config"
@@ -83,5 +84,13 @@ func Handler(c *gin.Context) {
 		responseBody.TLS = http_grab_model.NewTLS(c.Request.TLS)
 	}
 
-	c.JSON(http.StatusOK, responseBody)
+	// GET /?status_code=200 HTTP/1.1
+	// Host: www.example.com
+	statusCode := c.Query("status_code")
+	statusCodeInt, err := strconv.Atoi(statusCode)
+	if err != nil {
+		statusCodeInt = http.StatusOK
+	}
+
+	c.JSON(statusCodeInt, responseBody)
 }
