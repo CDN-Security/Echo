@@ -2,7 +2,6 @@ package controller
 
 import (
 	"log/slog"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -89,7 +88,7 @@ func Handler(c *gin.Context) {
 	statusCode := c.Query("status_code")
 	statusCodeInt, err := strconv.Atoi(statusCode)
 	if err != nil {
-		statusCodeInt = http.StatusOK
+		statusCodeInt = config.DefaultConfig.DefaultStatusCode
 	}
 
 	c.JSON(statusCodeInt, responseBody)

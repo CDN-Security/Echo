@@ -3,6 +3,7 @@ verification_config:
     query_name: "echo_challenge"
     cookie_name: "echo_challenge"
     header_name: "Echo-Challenge"
+default_status_code: 500
 server_configs:
     - host: 0.0.0.0
       port: 80

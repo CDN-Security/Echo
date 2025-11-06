@@ -29,6 +29,7 @@ type ServerConfig struct {
 type Config struct {
 	VerificationConfig VerificationConfig `json:"verification_config" yaml:"verification_config"`
 	ServerConfigs      []ServerConfig     `json:"server_configs" yaml:"server_configs"`
+	DefaultStatusCode  int                `json:"default_status_code" yaml:"default_status_code"`
 }
 
 var DefaultConfig = NewConfig()
